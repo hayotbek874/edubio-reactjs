@@ -1,0 +1,7 @@
+{
+  "name": "EduBio",
+  "description": "Sun'iy intellekt asosidagi 5-11 sinf biologiya ta'lim platformasi",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}

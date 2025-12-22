@@ -1,0 +1,13 @@
+{
+  "appId": "com.edubio.app",
+  "appName": "EduBio",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  },
+  "plugins": {
+    "CapacitorHttp": {
+      "enabled": true
+    }
+  }
+}
