@@ -3,7 +3,8 @@
   "appName": "EduBio",
   "webDir": "dist",
   "server": {
-    "androidScheme": "https"
+    "url": "https://SIZNING-VERCEL-LINKINGIZ.app",
+    "cleartext": true
   },
   "plugins": {
     "CapacitorHttp": {
