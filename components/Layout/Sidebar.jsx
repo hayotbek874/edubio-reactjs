@@ -95,7 +95,7 @@ export const Sidebar = ({ isOpen, onClose }) => {
           {/* Bottom Info Area */}
           <div className="mt-auto p-6 border-t border-white/5">
             <div className="bg-white/5 rounded-xl p-4 border border-white/5 backdrop-blur-sm">
-               <h4 className="text-teal-400 text-xs font-bold uppercase tracking-wider mb-1">Versiya 2.0</h4>
+               <h4 className="text-teal-400 text-xs font-bold uppercase tracking-wider mb-1">Versiya 1.0</h4>
                <p className="text-gray-500 text-[10px]">EduBio AI tomonidan quvvatlanadi</p>
             </div>
           </div>
