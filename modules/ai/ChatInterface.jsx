@@ -31,13 +31,14 @@ const VoiceOverlay = ({ onClose, onSend, isProcessing, isPlayingAudio }) => {
 
         // Auto-send logic: detect silence
         if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+        // Changed from 2000ms to 1000ms for faster response
         silenceTimerRef.current = setTimeout(() => {
           if (interimTranscript.trim().length > 0) {
             recog.stop();
             onSend(interimTranscript);
             setTranscript('');
           }
-        }, 2000); // 2 seconds of silence triggers send
+        }, 1000); 
       };
 
       recog.onend = () => {
