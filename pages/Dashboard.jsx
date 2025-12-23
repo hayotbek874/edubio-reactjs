@@ -27,6 +27,7 @@ export const Dashboard = () => {
             <span className="bg-gradient-to-r from-pink-400 via-rose-500 to-purple-500 bg-clip-text text-transparent animate-gradient-x bg-[length:200%_auto]">Platformasi</span>
           </h1>
           <p className="text-gray-100 text-base md:text-lg font-medium leading-relaxed opacity-95 drop-shadow-md mb-6">
+            Salom O'quvchilar! Platformaga xush kelibsiz.<br/>
             Biologiya fanini zamonaviy usulda, sun'iy intellekt yordamida o'rganing.
           </p>
         </div>

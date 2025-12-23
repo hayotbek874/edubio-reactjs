@@ -8,6 +8,12 @@
   "plugins": {
     "CapacitorHttp": {
       "enabled": true
+    },
+    "IonicCordovaCommon": {
+      "appId": "87bf14d8",
+      "channel": "Production",
+      "updateMethod": "auto",
+      "maxVersions": 2
     }
   }
 }
