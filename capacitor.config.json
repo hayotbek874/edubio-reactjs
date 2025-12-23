@@ -3,7 +3,7 @@
   "appName": "EduBio",
   "webDir": "dist",
   "server": {
-    "url": "https://SIZNING-VERCEL-LINKINGIZ.app",
+    "url": "https://edubio-reactjs.vercel.app",
     "cleartext": true
   },
   "plugins": {

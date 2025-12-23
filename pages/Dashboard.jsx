@@ -24,7 +24,7 @@ export const Dashboard = () => {
         <div className="w-full md:w-3/4 lg:w-1/2 bg-slate-900/60 backdrop-blur-md border border-white/10 rounded-3xl p-6 md:p-10 text-left shadow-2xl animate-fade-in transition-all ring-1 ring-white/5 mb-8">
           <h1 className="text-3xl md:text-5xl font-extrabold mb-4 drop-shadow-lg tracking-tight leading-tight">
             <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-cyan-400 bg-clip-text text-transparent animate-gradient-x bg-[length:200%_auto]">EduBio</span>{' '}
-            <span className="bg-gradient-to-r from-pink-400 via-rose-500 to-purple-500 bg-clip-text text-transparent animate-gradient-x bg-[length:200%_auto]">Platformasi</span>
+            <span className="bg-gradient-to-r from-pink-400 via-rose-500 to-purple-500 bg-clip-text text-transparent animate-gradient-x bg-[length:200%_auto]">Platformasi v1.0</span>
           </h1>
           <p className="text-gray-100 text-base md:text-lg font-medium leading-relaxed opacity-95 drop-shadow-md mb-6">
             Salom O'quvchilar! Platformaga xush kelibsiz.<br/>
