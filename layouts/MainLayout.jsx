@@ -1,10 +1,9 @@
-
 import React, { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { Navbar } from '../components/Layout/Navbar';
 import { Sidebar } from '../components/Layout/Sidebar';
 
-export const MainLayout = () => {
+export const MainLayout = ({ user, isGuest, onLogout }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const location = useLocation();
 
@@ -26,6 +25,9 @@ export const MainLayout = () => {
         <Navbar 
           onMenuClick={() => setIsSidebarOpen(true)} 
           isDark={isImmersive}
+          user={user}
+          isGuest={isGuest}
+          onLogout={onLogout}
         />
       </div>
 

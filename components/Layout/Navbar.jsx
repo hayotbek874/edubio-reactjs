@@ -1,8 +1,8 @@
 import React from 'react';
-import { Menu, User } from 'lucide-react';
+import { Menu, User, LogOut } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-export const Navbar = ({ onMenuClick, isDark = false }) => {
+export const Navbar = ({ onMenuClick, isDark = false, user, isGuest, onLogout }) => {
   return (
     <nav className={`h-20 flex items-center justify-between px-4 sticky top-0 z-30 border-b transition-colors duration-300 ${
       isDark 
@@ -35,12 +35,39 @@ export const Navbar = ({ onMenuClick, isDark = false }) => {
         </Link>
       </div>
 
-      <div className="flex items-center gap-4">
-        <button className={`p-2 rounded-full transition-colors ${
-            isDark ? 'hover:bg-white/10 text-gray-300' : 'hover:bg-gray-100 text-gray-600'
-          }`}>
-          <User size={24} />
-        </button>
+      <div className="flex items-center gap-3">
+        {/* Foydalanuvchi ma'lumotlari */}
+        {user ? (
+          <div className="flex items-center gap-2 mr-2">
+             <img 
+               src={user.photoURL} 
+               alt={user.displayName} 
+               className="w-9 h-9 rounded-full border border-white/20"
+               title={user.displayName}
+             />
+             <span className={`text-sm font-medium hidden md:block ${isDark ? 'text-white' : 'text-gray-700'}`}>
+                {user.displayName?.split(' ')[0]}
+             </span>
+          </div>
+        ) : isGuest ? (
+           <div className={`flex items-center gap-2 mr-2 px-3 py-1.5 rounded-full ${isDark ? 'bg-white/10' : 'bg-gray-100'}`}>
+              <User size={16} />
+              <span className="text-sm font-medium">Mehmon</span>
+           </div>
+        ) : null}
+
+        {/* Chiqish tugmasi */}
+        {(user || isGuest) && (
+          <button 
+            onClick={onLogout}
+            title="Chiqish"
+            className={`p-2 rounded-full transition-colors ${
+              isDark ? 'hover:bg-red-500/20 text-gray-300 hover:text-red-400' : 'hover:bg-red-100 text-gray-600 hover:text-red-600'
+            }`}
+          >
+            <LogOut size={20} />
+          </button>
+        )}
       </div>
     </nav>
   );

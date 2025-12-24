@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, PlayCircle, BookOpen, Video, Box, PenTool, Play } from 'lucide-react';
+import { ArrowLeft, PlayCircle, BookOpen, Video, Box, PenTool, Play, ExternalLink } from 'lucide-react';
 import { BotanikaIntro } from '../components/lessons/botanika/BotanikaIntro';
 import { FloweringPlants } from '../components/lessons/botanika/FloweringPlants';
 import { PlantLifeForms } from '../components/lessons/botanika/PlantLifeForms';
@@ -84,7 +84,6 @@ const lessonsData = {
 
 // Video darslar ma'lumotlari
 // YouTube embed linklari shu yerga qo'yiladi. 
-// Masalan: https://www.youtube.com/embed/VIDEO_ID
 const videosData = {
   botanika: [
     { id: 1, title: "1-§. Botanika – o‘simliklar haqidagi fan", url: "https://www.youtube.com/embed/KVLR1aSp4cY" },
@@ -163,28 +162,23 @@ export const LessonsPage = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedResourceType, setSelectedResourceType] = useState(null); // 'lessons', 'videos', '3d', 'quiz'
   const [selectedLesson, setSelectedLesson] = useState(null);
-  const [selectedVideo, setSelectedVideo] = useState(null);
 
   // Kategoriya (masalan, Botanika) tanlanganda
   const handleCategoryClick = (categoryId) => {
     setSelectedCategory(categoryId);
     setSelectedResourceType(null);
     setSelectedLesson(null);
-    setSelectedVideo(null);
   };
 
   // Resurs turi (masalan, Dars Mavzulari) tanlanganda
   const handleResourceTypeClick = (typeId) => {
     setSelectedResourceType(typeId);
-    setSelectedVideo(null);
     setSelectedLesson(null);
   };
 
   const handleBackClick = () => {
     if (selectedLesson) {
       setSelectedLesson(null);
-    } else if (selectedVideo) {
-      setSelectedVideo(null);
     } else if (selectedResourceType) {
       setSelectedResourceType(null);
     } else {
@@ -201,7 +195,15 @@ export const LessonsPage = () => {
   };
 
   const handleVideoClick = (video) => {
-    setSelectedVideo(video);
+    const videoId = getYouTubeId(video.url);
+    if (videoId) {
+        // YouTube ilovasida yoki brauzerda ochish uchun to'liq havola
+        const watchUrl = `https://www.youtube.com/watch?v=${videoId}`;
+        // Yangi oynada (ilova tashqarisida) ochish
+        window.open(watchUrl, '_blank');
+    } else {
+        alert("Video havolasi noto'g'ri");
+    }
   };
 
   const currentCategory = categories.find(c => c.id === selectedCategory);
@@ -279,7 +281,6 @@ export const LessonsPage = () => {
               </button>
               <h2 className="text-2xl md:text-3xl font-bold text-white uppercase tracking-wide">
                 {selectedLesson ? selectedLesson.title : 
-                 selectedVideo ? selectedVideo.title :
                  (selectedResourceType ? `${currentCategory?.title} - ${resourceTypes.find(r => r.id === selectedResourceType)?.title}` : currentCategory?.title)}
               </h2>
             </div>
@@ -361,81 +362,60 @@ export const LessonsPage = () => {
 
                  {/* ------------- VIDEO DARSLAR --------------- */}
                  {selectedResourceType === 'videos' && (
-                    selectedVideo ? (
-                        /* VIDEO PLAYER */
-                        <div className="flex flex-col gap-4">
-                           <div className="relative pt-[56.25%] w-full rounded-2xl overflow-hidden border border-white/10 bg-black shadow-2xl">
-                             {/* CUSTOM IFRAME WITH SANDBOX */}
-                              <iframe 
-                                className="absolute inset-0 w-full h-full"
-                                src={`${selectedVideo.url}${selectedVideo.url.includes('?') ? '&' : '?'}origin=http://localhost`} 
-                                title={selectedVideo.title}
-                                frameBorder="0" 
-                                // O'zgartirish kiritilgan qism: sandbox atributi
-                                sandbox="allow-scripts allow-same-origin allow-presentation"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                                allowFullScreen>
-                              </iframe>
-                           </div>
-                           <div className="bg-white/5 p-4 rounded-xl border border-white/10">
-                              <h3 className="text-xl font-bold text-white mb-2">{selectedVideo.title}</h3>
-                              <p className="text-gray-400 text-sm">Ushbu videodars orqali mavzuni yanada chuqurroq o'rganishingiz mumkin.</p>
-                           </div>
-                        </div>
-                    ) : (
-                        /* VIDEOS LIST */
-                        currentVideos.length > 0 ? (
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                             {currentVideos.map((video, index) => {
-                                const videoId = getYouTubeId(video.url);
-                                const thumbnailUrl = videoId ? `https://img.youtube.com/vi/${videoId}/mqdefault.jpg` : null;
+                    /* VIDEOS LIST */
+                    currentVideos.length > 0 ? (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                         {currentVideos.map((video, index) => {
+                            const videoId = getYouTubeId(video.url);
+                            const thumbnailUrl = videoId ? `https://img.youtube.com/vi/${videoId}/mqdefault.jpg` : null;
 
-                                return (
-                                  <div 
-                                    key={video.id} 
-                                    onClick={() => handleVideoClick(video)}
-                                    className="group bg-white/5 border border-white/10 rounded-xl overflow-hidden cursor-pointer hover:bg-white/10 transition-all hover:-translate-y-1"
-                                  >
-                                     {/* Thumbnail Placeholder (or dynamic if available) */}
-                                     <div className="h-48 relative flex items-center justify-center bg-black">
-                                        {thumbnailUrl ? (
-                                          <img 
-                                            src={thumbnailUrl} 
-                                            alt={video.title} 
-                                            className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
-                                          />
-                                        ) : (
-                                          <div className="w-full h-full bg-black/40" /> 
-                                        )}
-                                        
-                                        <div className="absolute inset-0 flex items-center justify-center">
-                                            <div className="w-14 h-14 rounded-full bg-red-600 flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform">
-                                               <Play size={24} fill="white" />
-                                            </div>
+                            return (
+                              <div 
+                                key={video.id} 
+                                onClick={() => handleVideoClick(video)}
+                                className="group bg-white/5 border border-white/10 rounded-xl overflow-hidden cursor-pointer hover:bg-white/10 transition-all hover:-translate-y-1"
+                              >
+                                 {/* Thumbnail Placeholder (or dynamic if available) */}
+                                 <div className="h-48 relative flex items-center justify-center bg-black">
+                                    {thumbnailUrl ? (
+                                      <img 
+                                        src={thumbnailUrl} 
+                                        alt={video.title} 
+                                        className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                                      />
+                                    ) : (
+                                      <div className="w-full h-full bg-black/40" /> 
+                                    )}
+                                    
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                        <div className="w-14 h-14 rounded-full bg-red-600 flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform">
+                                           <ExternalLink size={24} fill="white" className="text-white" />
                                         </div>
-                                        <div className="absolute top-2 right-2 bg-black/60 px-2 py-1 rounded text-xs text-white">Video</div>
-                                     </div>
-                                     <div className="p-4">
-                                        <h4 className="text-white font-bold text-lg mb-1 group-hover:text-red-400 transition-colors line-clamp-2">
-                                          {video.title}
-                                        </h4>
-                                        <p className="text-gray-500 text-sm">EduBio Videodarslari</p>
-                                     </div>
-                                  </div>
-                                );
-                             })}
-                          </div>
-                        ) : (
-                          <div className="flex flex-col items-center justify-center py-20 bg-white/5 rounded-2xl border border-white/10 border-dashed">
-                             <div className="w-20 h-20 rounded-full flex items-center justify-center mb-4 bg-red-500/20">
-                                <Video size={40} className="text-red-400" />
-                             </div>
-                             <h3 className="text-2xl font-bold text-white mb-2">Videolar tez kunda...</h3>
-                             <p className="text-gray-400 text-center max-w-md px-4">
-                               Hozircha bu bo'limga videolar yuklanmagan. Iltimos, keyinroq tekshirib ko'ring.
-                             </p>
-                          </div>
-                        )
+                                    </div>
+                                    <div className="absolute top-2 right-2 bg-black/60 px-2 py-1 rounded text-xs text-white flex items-center gap-1">
+                                        <Play size={10} /> YouTube
+                                    </div>
+                                 </div>
+                                 <div className="p-4">
+                                    <h4 className="text-white font-bold text-lg mb-1 group-hover:text-red-400 transition-colors line-clamp-2">
+                                      {video.title}
+                                    </h4>
+                                    <p className="text-gray-500 text-sm">EduBio • YouTube-da ochish</p>
+                                 </div>
+                              </div>
+                            );
+                         })}
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center py-20 bg-white/5 rounded-2xl border border-white/10 border-dashed">
+                         <div className="w-20 h-20 rounded-full flex items-center justify-center mb-4 bg-red-500/20">
+                            <Video size={40} className="text-red-400" />
+                         </div>
+                         <h3 className="text-2xl font-bold text-white mb-2">Videolar tez kunda...</h3>
+                         <p className="text-gray-400 text-center max-w-md px-4">
+                           Hozircha bu bo'limga videolar yuklanmagan. Iltimos, keyinroq tekshirib ko'ring.
+                         </p>
+                      </div>
                     )
                  )}
 
