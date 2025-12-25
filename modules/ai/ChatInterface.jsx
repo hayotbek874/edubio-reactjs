@@ -1,10 +1,10 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Image as ImageIcon, Volume2, Loader2, Sparkles, Mic, X, MicOff, Paperclip, FileText, FileSpreadsheet, File as FileIcon } from 'lucide-react';
+import { Send, Image as ImageIcon, Volume2, Loader2, Sparkles, Mic, X, MicOff, Paperclip, FileText, FileSpreadsheet, File as FileIcon, Globe } from 'lucide-react';
 import { generateBioResponse, generateBioImage, generateSpeech } from '../../services/geminiService';
 
 // --- Voice Mode Component ---
-const VoiceOverlay = ({ onClose, onSend, isProcessing, isPlayingAudio }) => {
+const VoiceOverlay = ({ onClose, onSend, isProcessing, isPlayingAudio, language }) => {
   const [transcript, setTranscript] = useState('');
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef(null);
@@ -17,7 +17,14 @@ const VoiceOverlay = ({ onClose, onSend, isProcessing, isPlayingAudio }) => {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       const recog = new SpeechRecognition();
       recog.continuous = true; // Keep listening until silence
-      recog.lang = 'uz-UZ';
+      
+      // Set language for speech recognition
+      const langMap = {
+        'uz': 'uz-UZ',
+        'ru': 'ru-RU',
+        'en': 'en-US'
+      };
+      recog.lang = langMap[language] || 'uz-UZ';
       recog.interimResults = true;
 
       recog.onstart = () => setIsListening(true);
@@ -31,7 +38,6 @@ const VoiceOverlay = ({ onClose, onSend, isProcessing, isPlayingAudio }) => {
 
         // Auto-send logic: detect silence
         if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
-        // Changed from 2000ms to 1000ms for faster response
         silenceTimerRef.current = setTimeout(() => {
           if (interimTranscript.trim().length > 0) {
             recog.stop();
@@ -53,7 +59,7 @@ const VoiceOverlay = ({ onClose, onSend, isProcessing, isPlayingAudio }) => {
       if (recognitionRef.current) recognitionRef.current.stop();
       if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
     };
-  }, []);
+  }, [language]); // Re-initialize if language changes
 
   const toggleMic = () => {
     if (isListening) {
@@ -64,10 +70,19 @@ const VoiceOverlay = ({ onClose, onSend, isProcessing, isPlayingAudio }) => {
   };
 
   // Determine Visual State
-  let visualState = 'idle'; // idle, listening, processing, speaking
+  let visualState = 'idle'; 
   if (isProcessing) visualState = 'processing';
   else if (isPlayingAudio) visualState = 'speaking';
   else if (isListening) visualState = 'listening';
+
+  const getLocalizedText = (key) => {
+    const texts = {
+        uz: { listening: "Eshitilmoqda...", speak: "Gapiring...", processing: "Javob tayyorlanmoqda...", speaking: "EduBio AI gapirmoqda...", idle: "Mikrofon o'chiq. Gapirish uchun tugmani bosing." },
+        ru: { listening: "Слушаю...", speak: "Говорите...", processing: "Готовлю ответ...", speaking: "EduBio AI говорит...", idle: "Микрофон выключен. Нажмите кнопку, чтобы говорить." },
+        en: { listening: "Listening...", speak: "Speak now...", processing: "Thinking...", speaking: "EduBio AI is speaking...", idle: "Mic is off. Tap to speak." }
+    };
+    return texts[language][key] || texts.uz[key];
+  };
 
   return (
     <div className="absolute inset-0 z-50 bg-[#0a0a0a]/90 backdrop-blur-md flex flex-col items-center justify-center p-6 animate-fade-in">
@@ -117,18 +132,18 @@ const VoiceOverlay = ({ onClose, onSend, isProcessing, isPlayingAudio }) => {
       <div className="text-center max-w-lg min-h-[80px]">
         {visualState === 'listening' && (
           <>
-            <p className="text-white/60 text-sm mb-2 uppercase tracking-widest font-bold">Eshitilmoqda...</p>
-            <p className="text-2xl font-light text-white">{transcript || "Gapiring..."}</p>
+            <p className="text-white/60 text-sm mb-2 uppercase tracking-widest font-bold">{getLocalizedText('listening')}</p>
+            <p className="text-2xl font-light text-white">{transcript || getLocalizedText('speak')}</p>
           </>
         )}
         {visualState === 'processing' && (
-          <p className="text-emerald-400 text-xl animate-pulse">Javob tayyorlanmoqda...</p>
+          <p className="text-emerald-400 text-xl animate-pulse">{getLocalizedText('processing')}</p>
         )}
         {visualState === 'speaking' && (
-          <p className="text-white/80 text-xl">EduBio AI gapirmoqda...</p>
+          <p className="text-white/80 text-xl">{getLocalizedText('speaking')}</p>
         )}
         {visualState === 'idle' && (
-           <p className="text-white/40">Mikrofon o'chiq. Gapirish uchun tugmani bosing.</p>
+           <p className="text-white/40">{getLocalizedText('idle')}</p>
         )}
       </div>
 
@@ -155,7 +170,6 @@ const fileToGenerativePart = async (file) => {
     const reader = new FileReader();
     reader.onloadend = () => {
       const base64String = reader.result;
-      // Remove data url prefix (e.g. "data:image/jpeg;base64," or "data:application/pdf;base64,")
       const base64Data = base64String.split(',')[1];
       resolve({
         data: base64Data,
@@ -181,10 +195,12 @@ const getFileIcon = (fileName) => {
 
 export const ChatInterface = () => {
   const [messages, setMessages] = useState([]);
+  
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [isVoiceMode, setIsVoiceMode] = useState(false);
+  const [language, setLanguage] = useState('uz'); // Default language 'uz'
   
   // File Upload State
   const [selectedFile, setSelectedFile] = useState(null);
@@ -203,20 +219,12 @@ export const ChatInterface = () => {
   const handleFileSelect = (event) => {
     const file = event.target.files?.[0];
     if (file) {
-      // Validate size (e.g., max 10MB)
-      if (file.size > 10 * 1024 * 1024) {
-        alert("Fayl hajmi 10MB dan oshmasligi kerak.");
-        return;
-      }
-
       setSelectedFile(file);
-      
-      // If it's an image, create a preview URL
       if (file.type.startsWith('image/')) {
         const url = URL.createObjectURL(file);
         setPreviewUrl(url);
       } else {
-        setPreviewUrl(null); // No visual preview for docs, we show icon
+        setPreviewUrl(null); 
       }
     }
   };
@@ -230,7 +238,6 @@ export const ChatInterface = () => {
 
   const handleSend = async (textInput) => {
     const contentToSend = textInput || input;
-    // Allow sending if there is a file, even if text is empty
     if ((!contentToSend.trim() && !selectedFile) || isLoading) return;
 
     // Create User Message
@@ -240,19 +247,20 @@ export const ChatInterface = () => {
       content: contentToSend,
       timestamp: new Date(),
       type: 'text',
-      // If image, show it. If doc, we can render a file card in the message history logic
       imageUrl: previewUrl || undefined 
     };
 
-    setMessages(prev => [...prev, {
+    const newMessages = [...messages, {
         ...userMsg,
         content: contentToSend || `[Fayl yuklandi: ${selectedFile?.name}]`
-    }]);
+    }];
+    
+    // Update local state
+    setMessages(newMessages);
 
     setInput('');
     setIsLoading(true);
     
-    // Store file ref to send, then clear state
     const fileToSend = selectedFile;
     clearSelectedFile(); 
 
@@ -261,25 +269,27 @@ export const ChatInterface = () => {
       let responseText = '';
       let generatedImageUrl = undefined;
 
-      // Handle Attachment (Image or Doc)
+      // PASS LANGUAGE to generateBioResponse
       if (fileToSend) {
         const filePart = await fileToGenerativePart(fileToSend);
-        // Pass generic attachment
-        responseText = await generateBioResponse(userMsg.content, filePart);
+        responseText = await generateBioResponse(userMsg.content, filePart, messages, language);
       } 
-      // Handle Image Generation Request
-      else if (lowerInput.includes('rasm chiz') || lowerInput.includes('create image') || lowerInput.includes('ko\'rsat')) {
+      else if (lowerInput.includes('rasm chiz') || lowerInput.includes('create image') || lowerInput.includes('ko\'rsat') || lowerInput.includes('нарисуй') || lowerInput.includes('покажи')) {
         const imgUrl = await generateBioImage(userMsg.content);
         if (imgUrl) {
           generatedImageUrl = imgUrl;
-          responseText = "Mana siz so'ragan rasm:";
+          const imgTexts = {
+              uz: "Mana siz so'ragan rasm:",
+              ru: "Вот изображение, которое вы просили:",
+              en: "Here is the image you asked for:"
+          };
+          responseText = imgTexts[language] || imgTexts.uz;
         } else {
-          responseText = await generateBioResponse(userMsg.content);
+          responseText = await generateBioResponse(userMsg.content, null, messages, language);
         }
       } 
-      // Handle Standard Text
       else {
-        responseText = await generateBioResponse(userMsg.content);
+        responseText = await generateBioResponse(userMsg.content, null, messages, language);
       }
 
       const aiMsg = {
@@ -291,22 +301,28 @@ export const ChatInterface = () => {
         imageUrl: generatedImageUrl
       };
 
-      setMessages(prev => [...prev, aiMsg]);
+      const finalMessages = [...newMessages, aiMsg];
+      setMessages(finalMessages);
 
-      // If in voice mode, automatically play audio
       if (isVoiceMode) {
         playTTS(responseText);
       }
 
     } catch (e) {
       console.error(e);
-      setMessages(prev => [...prev, {
+      const errorTexts = {
+          uz: "Kechirasiz, xatolik yuz berdi. Iltimos qayta urinib ko'ring.",
+          ru: "Извините, произошла ошибка. Пожалуйста, попробуйте еще раз.",
+          en: "Sorry, an error occurred. Please try again."
+      };
+      const errorMsg = {
           id: Date.now().toString(),
           role: 'model',
-          content: "Kechirasiz, xatolik yuz berdi. Iltimos qayta urinib ko'ring.",
+          content: errorTexts[language] || errorTexts.uz,
           timestamp: new Date(),
           type: 'text'
-      }]);
+      };
+      setMessages([...newMessages, errorMsg]);
     } finally {
       setIsLoading(false);
     }
@@ -317,18 +333,13 @@ export const ChatInterface = () => {
     setIsPlayingAudio(true);
     
     try {
-      // Clean text for speech if needed, but TTS generally handles some symbols well. 
-      // The output text is already cleaned visually, but we pass raw text to TTS usually.
       const rawAudioBuffer = await generateSpeech(text);
       if (rawAudioBuffer) {
         if (!audioContextRef.current) {
-          // Initialize AudioContext if not already done
           audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
         }
         
         const ctx = audioContextRef.current;
-        
-        // --- MANUAL PCM DECODING ---
         const pcmData = new Int16Array(rawAudioBuffer);
         const floatData = new Float32Array(pcmData.length);
         
@@ -336,7 +347,6 @@ export const ChatInterface = () => {
           floatData[i] = pcmData[i] / 32768.0;
         }
 
-        // Create an AudioBuffer. Gemini TTS typically uses 24000Hz.
         const audioBuffer = ctx.createBuffer(1, floatData.length, 24000);
         audioBuffer.copyToChannel(floatData, 0);
         
@@ -358,26 +368,13 @@ export const ChatInterface = () => {
   const renderCleanText = (text) => {
     if (!text) return null;
 
-    // 1. Remove Headers (### Title -> Title)
-    // Replace 1-6 hashes at the start of a line or anywhere followed by space
     let cleanText = text.replace(/#{1,6}\s?/g, '');
-
-    // 2. Remove Horizontal Rules (--- or ___)
     cleanText = cleanText.replace(/[-_]{3,}/g, '');
-
-    // 3. Clean Lists (* Item -> • Item)
     cleanText = cleanText.replace(/^\s*[\-\*]\s/gm, '• ');
 
-    // 4. Parse Custom Colored Tags
-    // Patterns: 
-    // **text** -> Green/Teal (Terms)
-    // [[text]] -> Orange/Amber (Important)
-    // ((text)) -> Purple/Pink (Latin/Names)
-    
     const parts = cleanText.split(/(\*\*.*?\*\*|\[\[.*?\]\]|\(\(.*?\)\))/g);
     
     return parts.map((part, index) => {
-      // Handle **Term** (Teal)
       if (part.startsWith('**') && part.endsWith('**')) {
         const content = part.slice(2, -2);
         return (
@@ -386,8 +383,6 @@ export const ChatInterface = () => {
           </span>
         );
       }
-      
-      // Handle [[Important]] (Amber/Orange)
       if (part.startsWith('[[') && part.endsWith(']]')) {
         const content = part.slice(2, -2);
         return (
@@ -396,8 +391,6 @@ export const ChatInterface = () => {
           </span>
         );
       }
-
-      // Handle ((Scientific/Name)) (Purple)
       if (part.startsWith('((') && part.endsWith('))')) {
         const content = part.slice(2, -2);
         return (
@@ -406,174 +399,229 @@ export const ChatInterface = () => {
           </span>
         );
       }
-
       return part;
     });
   };
 
+  // Static Texts for Welcome Screen based on language
+  const welcomeTexts = {
+      uz: {
+          title: "EduBio AI ga xush kelibsiz!",
+          subtitle: "Men biologiya bo'yicha yordamchingizman. Menga savol bering yoki rasm yuboring.",
+          placeholder: "Savol bering..."
+      },
+      ru: {
+          title: "Добро пожаловать в EduBio AI!",
+          subtitle: "Я ваш помощник по биологии. Задайте мне вопрос или отправьте изображение.",
+          placeholder: "Задайте вопрос..."
+      },
+      en: {
+          title: "Welcome to EduBio AI!",
+          subtitle: "I am your biology assistant. Ask me a question or send an image.",
+          placeholder: "Ask a question..."
+      }
+  };
+
+  const currentWelcome = welcomeTexts[language] || welcomeTexts.uz;
+
   return (
-    <div className="flex flex-col h-full relative overflow-hidden bg-slate-900">
+    <div className="flex h-full relative overflow-hidden bg-slate-900">
       
       {/* Styles for Animations */}
       <style>{`
         .box-shadow-neon { box-shadow: 0 0 20px rgba(52, 211, 153, 0.4); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       `}</style>
 
-      {/* Background Layer: Nature Scene */}
+      {/* Background Layer */}
       <div 
         className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat pointer-events-none"
         style={{ 
-          // Mystical Green Forest Background
           backgroundImage: `url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=2560&auto=format&fit=crop')`
         }}
       >
-         {/* Minimal Dark Overlay for maximum clarity */}
-         <div className="absolute inset-0 bg-black/20"></div>
+         <div className="absolute inset-0 bg-black/30"></div>
       </div>
 
-      {/* Voice Mode Overlay */}
-      {isVoiceMode && (
-        <VoiceOverlay 
-          onClose={() => setIsVoiceMode(false)} 
-          onSend={handleSend}
-          isProcessing={isLoading}
-          isPlayingAudio={isPlayingAudio}
-        />
-      )}
-
-      {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 relative z-10 no-scrollbar">
-        {/* Empty State Removed: Only Background Visible */}
+      {/* --- MAIN CHAT AREA --- */}
+      <div className="flex-1 flex flex-col h-full relative z-10 w-full min-w-0">
         
-        {messages.map((msg) => (
-          <div key={msg.id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-            <div className={`max-w-[85%] md:max-w-[70%] rounded-2xl p-4 backdrop-blur-md shadow-lg transition-all ${
-              msg.role === 'user' 
-                ? 'bg-emerald-900/70 text-white border border-emerald-500/30' 
-                : 'bg-black/60 text-gray-100 border border-white/10'
-            }`}>
-              {msg.role === 'model' && (
-                <div className="flex items-center gap-2 mb-2 text-emerald-400 text-xs font-bold uppercase tracking-wider">
-                  <Sparkles size={12} /> EduBio AI
-                </div>
-              )}
-              
-              {/* Display Images */}
-              {msg.imageUrl && (
-                <img src={msg.imageUrl} alt="Uploaded or Generated" className="rounded-xl mb-3 max-h-80 w-full object-cover border border-white/10" />
-              )}
-
-              {/* Text Content with Auto-Formatting */}
-              <p className="whitespace-pre-wrap leading-relaxed text-[15px] md:text-base">
-                {renderCleanText(msg.content)}
-              </p>
-              
-              {msg.role === 'model' && (
-                <div className="flex items-center mt-3">
-                  <button 
-                    onClick={() => playTTS(msg.content)}
-                    disabled={isPlayingAudio}
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 text-xs text-emerald-200/70 transition-colors"
-                  >
-                    {isPlayingAudio ? <Loader2 className="animate-spin w-3 h-3" /> : <Volume2 className="w-3 h-3" />}
-                    <span>O'qish</span>
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        ))}
-        
-        {isLoading && (
-          <div className="flex justify-start">
-            <div className="flex items-center gap-3 text-emerald-300 p-4 bg-black/40 rounded-xl backdrop-blur-sm border border-white/5">
-              <Loader2 className="w-5 h-5 animate-spin" />
-              <span className="text-sm font-medium">Javob tayyorlanmoqda...</span>
-            </div>
-          </div>
-        )}
-        <div ref={messagesEndRef} />
-      </div>
-
-      {/* Input Area */}
-      <div className="p-3 md:p-6 z-20">
-        <div className="max-w-3xl mx-auto relative">
-          
-          {/* File Preview (Both Images and Docs) */}
-          {selectedFile && (
-            <div className="absolute bottom-full left-0 mb-4 p-2 bg-black/80 rounded-xl border border-white/10 shadow-xl flex items-center gap-3 animate-fade-in backdrop-blur-md min-w-[150px]">
-              {previewUrl ? (
-                  <img src={previewUrl} alt="Preview" className="w-16 h-16 object-cover rounded-lg" />
-              ) : (
-                  <div className="w-16 h-16 bg-white/10 rounded-lg flex items-center justify-center">
-                    {getFileIcon(selectedFile.name)}
-                  </div>
-              )}
-              <div className="flex flex-col mr-2">
-                  <span className="text-white text-sm font-medium truncate max-w-[150px]">{selectedFile.name}</span>
-                  <span className="text-white/50 text-xs">{(selectedFile.size / 1024).toFixed(1)} KB</span>
-              </div>
-              <button 
-                onClick={clearSelectedFile}
-                className="p-1.5 bg-red-500/20 text-red-400 rounded-full hover:bg-red-500 hover:text-white transition-colors ml-auto"
-              >
-                <X size={14} />
-              </button>
-            </div>
-          )}
-
-          {/* Input Bar - Natural/Glass Style */}
-          <div className="relative flex items-center bg-black/50 backdrop-blur-xl rounded-full p-2 pr-2 shadow-2xl border border-white/10 transition-all focus-within:border-emerald-500/50 focus-within:bg-black/70 focus-within:shadow-emerald-500/10">
-            
-            {/* File Upload Button (Generic) */}
-            <input 
-              type="file" 
-              ref={fileInputRef}
-              onChange={handleFileSelect}
-              accept="image/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/plain"
-              className="hidden"
+        {/* Voice Mode Overlay */}
+        {isVoiceMode && (
+            <VoiceOverlay 
+            onClose={() => setIsVoiceMode(false)} 
+            onSend={handleSend}
+            isProcessing={isLoading}
+            isPlayingAudio={isPlayingAudio}
+            language={language}
             />
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              className="p-3 text-gray-300 hover:text-white hover:bg-white/10 rounded-full transition-colors ml-1"
-              title="Fayl yuklash (Rasm, PDF, Word, Excel)"
-            >
-              <Paperclip size={20} />
-            </button>
+        )}
 
-            <div className="pl-2 flex-1">
-              <input
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') handleSend();
-                }}
-                placeholder={selectedFile ? "Fayl haqida so'rang..." : "Savol bering..."}
-                className="w-full bg-transparent border-none text-white placeholder-gray-400 focus:ring-0 text-base outline-none"
-              />
-            </div>
+        {/* Messages List */}
+        <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 relative no-scrollbar">
+            
+            {/* If no messages, show welcome */}
+            {messages.length === 0 && (
+                <div className="flex flex-col items-center justify-center h-full text-center text-white/50 p-6">
+                    <div className="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center mb-6 animate-pulse">
+                        <Sparkles size={40} className="text-emerald-400" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-white mb-2">{currentWelcome.title}</h2>
+                    <p className="max-w-md mb-6">{currentWelcome.subtitle}</p>
+                    
+                    {/* Language Selector in Welcome Screen */}
+                    <div className="bg-black/40 backdrop-blur-md p-2 rounded-xl border border-white/10 inline-flex gap-2">
+                         <button 
+                            onClick={() => setLanguage('uz')}
+                            className={`px-4 py-2 rounded-lg transition-all ${language === 'uz' ? 'bg-emerald-600 text-white' : 'hover:bg-white/10 text-white/70'}`}
+                         >
+                            🇺🇿 O'zbek
+                         </button>
+                         <button 
+                            onClick={() => setLanguage('ru')}
+                            className={`px-4 py-2 rounded-lg transition-all ${language === 'ru' ? 'bg-emerald-600 text-white' : 'hover:bg-white/10 text-white/70'}`}
+                         >
+                            🇷🇺 Русский
+                         </button>
+                         <button 
+                            onClick={() => setLanguage('en')}
+                            className={`px-4 py-2 rounded-lg transition-all ${language === 'en' ? 'bg-emerald-600 text-white' : 'hover:bg-white/10 text-white/70'}`}
+                         >
+                            🇺🇸 English
+                         </button>
+                    </div>
+                </div>
+            )}
 
-            <div className="flex items-center gap-2">
-               {/* Microphone Button */}
-               <button
-                  onClick={() => setIsVoiceMode(true)}
-                  disabled={isLoading}
-                  className="p-2 rounded-full text-gray-300 hover:text-white hover:bg-white/10 transition-colors"
-                  title="Ovozli rejimi"
-               >
-                  <Mic size={20} />
-               </button>
-               
-               <button
-                onClick={() => handleSend()}
-                disabled={(!input.trim() && !selectedFile) || isLoading}
-                className="w-10 h-10 flex items-center justify-center rounded-full bg-emerald-600 text-white hover:bg-emerald-500 transition-colors disabled:opacity-30 disabled:cursor-not-allowed shadow-lg shadow-emerald-500/20"
-              >
-                {isLoading ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
-              </button>
+            {messages.map((msg) => (
+            <div key={msg.id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <div className={`max-w-[85%] md:max-w-[70%] rounded-2xl p-4 backdrop-blur-md shadow-lg transition-all ${
+                msg.role === 'user' 
+                    ? 'bg-emerald-900/70 text-white border border-emerald-500/30' 
+                    : 'bg-black/60 text-gray-100 border border-white/10'
+                }`}>
+                {msg.role === 'model' && (
+                    <div className="flex items-center gap-2 mb-2 text-emerald-400 text-xs font-bold uppercase tracking-wider">
+                    <Sparkles size={12} /> EduBio AI
+                    </div>
+                )}
+                
+                {msg.imageUrl && (
+                    <img src={msg.imageUrl} alt="Uploaded" className="rounded-xl mb-3 max-h-80 w-full object-cover border border-white/10" />
+                )}
+
+                <p className="whitespace-pre-wrap leading-relaxed text-[15px] md:text-base">
+                    {renderCleanText(msg.content)}
+                </p>
+                
+                {msg.role === 'model' && (
+                    <div className="flex items-center mt-3">
+                    <button 
+                        onClick={() => playTTS(msg.content)}
+                        disabled={isPlayingAudio}
+                        className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 text-xs text-emerald-200/70 transition-colors"
+                    >
+                        {isPlayingAudio ? <Loader2 className="animate-spin w-3 h-3" /> : <Volume2 className="w-3 h-3" />}
+                        <span>O'qish</span>
+                    </button>
+                    </div>
+                )}
+                </div>
             </div>
-          </div>
+            ))}
+            
+            {isLoading && (
+            <div className="flex justify-start">
+                <div className="flex items-center gap-3 text-emerald-300 p-4 bg-black/40 rounded-xl backdrop-blur-sm border border-white/5">
+                <Loader2 className="w-5 h-5 animate-spin" />
+                <span className="text-sm font-medium">
+                    {language === 'uz' ? "Javob tayyorlanmoqda..." : 
+                     language === 'ru' ? "Готовлю ответ..." : 
+                     "Thinking..."}
+                </span>
+                </div>
+            </div>
+            )}
+            <div ref={messagesEndRef} />
+        </div>
+
+        {/* Input Area */}
+        <div className="p-3 md:p-6 z-20">
+            <div className="max-w-3xl mx-auto relative">
+            
+            {selectedFile && (
+                <div className="absolute bottom-full left-0 mb-4 p-2 bg-black/80 rounded-xl border border-white/10 shadow-xl flex items-center gap-3 animate-fade-in backdrop-blur-md min-w-[150px]">
+                {previewUrl ? (
+                    <img src={previewUrl} alt="Preview" className="w-16 h-16 object-cover rounded-lg" />
+                ) : (
+                    <div className="w-16 h-16 bg-white/10 rounded-lg flex items-center justify-center">
+                        {getFileIcon(selectedFile.name)}
+                    </div>
+                )}
+                <div className="flex flex-col mr-2">
+                    <span className="text-white text-sm font-medium truncate max-w-[150px]">{selectedFile.name}</span>
+                    <span className="text-white/50 text-xs">{(selectedFile.size / 1024).toFixed(1)} KB</span>
+                </div>
+                <button 
+                    onClick={clearSelectedFile}
+                    className="p-1.5 bg-red-500/20 text-red-400 rounded-full hover:bg-red-500 hover:text-white transition-colors ml-auto"
+                >
+                    <X size={14} />
+                </button>
+                </div>
+            )}
+
+            <div className="relative flex items-center bg-black/50 backdrop-blur-xl rounded-full p-2 pr-2 shadow-2xl border border-white/10 transition-all focus-within:border-emerald-500/50 focus-within:bg-black/70 focus-within:shadow-emerald-500/10">
+                
+                <input 
+                type="file" 
+                ref={fileInputRef}
+                onChange={handleFileSelect}
+                accept="image/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/plain"
+                className="hidden"
+                />
+                <button
+                onClick={() => fileInputRef.current?.click()}
+                className="p-3 text-gray-300 hover:text-white hover:bg-white/10 rounded-full transition-colors ml-1"
+                title="Fayl yuklash"
+                >
+                <Paperclip size={20} />
+                </button>
+
+                <div className="pl-2 flex-1">
+                <input
+                    type="text"
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={(e) => {
+                    if (e.key === 'Enter') handleSend();
+                    }}
+                    placeholder={selectedFile ? (language === 'uz' ? "Fayl haqida so'rang..." : language === 'ru' ? "Спросите о файле..." : "Ask about the file...") : currentWelcome.placeholder}
+                    className="w-full bg-transparent border-none text-white placeholder-gray-400 focus:ring-0 text-base outline-none"
+                />
+                </div>
+
+                <div className="flex items-center gap-2">
+                <button
+                    onClick={() => setIsVoiceMode(true)}
+                    disabled={isLoading}
+                    className="p-2 rounded-full text-gray-300 hover:text-white hover:bg-white/10 transition-colors"
+                    title="Ovozli rejim"
+                >
+                    <Mic size={20} />
+                </button>
+                
+                <button
+                    onClick={() => handleSend()}
+                    disabled={(!input.trim() && !selectedFile) || isLoading}
+                    className="w-10 h-10 flex items-center justify-center rounded-full bg-emerald-600 text-white hover:bg-emerald-500 transition-colors disabled:opacity-30 disabled:cursor-not-allowed shadow-lg shadow-emerald-500/20"
+                >
+                    {isLoading ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
+                </button>
+                </div>
+            </div>
+            </div>
         </div>
       </div>
     </div>

@@ -109,17 +109,17 @@ const videosData = {
     { id: 21, title: "21-§. Gullarning xilma-xilligi", url: "https://www.youtube.com/embed/5WFmLUsgRvM" },
     { id: 22, title: "22-§. To‘pgullar", url: "https://www.youtube.com/embed/WjXVMSekcZQ" },
     { id: 23, title: "23-§. Mevalar", url: "https://www.youtube.com/embed/UOPX0rJx_-w" },
-    { id: 24, title: "24-§. Urug‘", url: "" },
-    { id: 25, title: "25-§. O‘simliklarning mineral oziqlanishi. Ildiz bosimi. O‘g‘itlar", url: "" },
-    { id: 26, title: "26-§. Poyada oziq moddalarning harakatlanishi", url: "" },
-    { id: 27, title: "27-§. Barglarda organik moddalarning hosil bo‘lishi", url: "" },
-    { id: 28, title: "28-§. O‘simliklarning nafas olishi, oziqlanishi. O‘simliklarda moddalar almashinuvi", url: "" },
+    { id: 24, title: "24-§. Urug‘", url: "https://youtu.be/Cpm09KI9IDs?si=iG6pzRC2QE9HRubT" },
+    { id: 25, title: "25-§. O‘simliklarning mineral oziqlanishi. Ildiz bosimi. O‘g‘itlar", url: "https://youtu.be/Vh7YrgBUVf4?si=b4HiDNNfp7iA7krj" },
+    { id: 26, title: "26-§. Poyada oziq moddalarning harakatlanishi", url: "https://youtu.be/TRHkOMbOTCk?si=aV0cGa4WN9UtWr41" },
+    { id: 27, title: "27-§. Barglarda organik moddalarning hosil bo‘lishi", url: "https://youtu.be/8XB5I4ZFB5U?si=ZFnBbX-ZgEu3dByM" },
+    { id: 28, title: "28-§. O‘simliklarning nafas olishi, oziqlanishi. O‘simliklarda moddalar almashinuvi", url: "https://youtu.be/pyRooYrAXc8?si=fmLwWFu3b5Sg4yLQ" },
     { id: 29, title: "29-§. O‘simliklarning suv bug‘latishi", url: "" },
     { id: 30, title: "30-§. Kuz faslida o‘simliklar hayotida ro‘y beradigan o‘zgarishlar", url: "" },
     { id: 31, title: "31-§. O‘simliklarning ko‘payishi", url: "" },
     { id: 32, title: "32-§. Gullarning changlanishi", url: "" },
     { id: 33, title: "33-§. Gulli o‘simliklarning jinsiy ko‘payishi. Urug‘lanish", url: "" },
-    { id: 34, title: "34-§. Meva va urug‘larning tarqalishi", url: "" },
+    { id: 34, title: "34-§. Meva va urug‘larning tarqalishi", url: "https://youtu.be/quoaxEbb0J0?si=jroLak-3QbSbE2JW" },
     { id: 35, title: "35-§. Urug‘larning unib chiqishi", url: "" },
     { id: 36, title: "36-§. O‘simlik – yaxlit organizm", url: "" },
     { id: 37, title: "37-§. O‘simliklar dunyosiga ekologik omillarning ta’siri", url: "" },
@@ -153,6 +153,7 @@ const videosData = {
 // YouTube ID sini ajratib olish funksiyasi
 const getYouTubeId = (url) => {
   if (!url) return null;
+  // Yangi regex qo'shildi: youtube.com/watch?v=, youtu.be/, va boshqa variantlar uchun
   const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
   const match = url.match(regExp);
   return (match && match[2].length === 11) ? match[2] : null;

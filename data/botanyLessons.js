@@ -189,7 +189,7 @@ export const botanyLessons = [
     "title": "24-§. Urug‘",
     "chapter": "III bob. Gulli o‘simliklarning vegetativ va generativ organlari",
     "preview": "Urug‘ning tuzilishi.",
-    "content": []
+    "videoUrl": "https://youtu.be/Cpm09KI9IDs?si=iG6pzRC2QE9HRubT"
   },
   {
     "id": "bot-25",
@@ -269,7 +269,7 @@ export const botanyLessons = [
     "title": "34-§. Meva va urug‘larning tarqalishi",
     "chapter": "IV bob. Gulli o‘simliklarning hayotiy faoliyati",
     "preview": "Urug‘ va mevalarning tarqalish yo‘llari.",
-    "content": []
+    "videoUrl": "https://youtu.be/quoaxEbb0J0?si=jroLak-3QbSbE2JW"
   },
   {
     "id": "bot-35",
