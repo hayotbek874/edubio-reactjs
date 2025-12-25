@@ -5,7 +5,8 @@ export const botanyLessons = [
     "title": "1-§. Botanika – o‘simliklar haqidagi fan",
     "chapter": "I bob. O‘simliklar dunyosi bilan umumiy tanishuv",
     "preview": "Botanika fani va uning ahamiyati haqida umumiy tushuncha.",
-    "content": []
+    "videoUrl": "https://youtu.be/qY3qfaJoVLA?si=jp-7qOXvJB98Ux9o"
+
   },
   {
     "id": "bot-2",
@@ -13,7 +14,7 @@ export const botanyLessons = [
     "title": "2-§. Gulli o‘simliklar bilan umumiy tanishish",
     "chapter": "I bob. O‘simliklar dunyosi bilan umumiy tanishuv",
     "preview": "Gulli o‘simliklarning umumiy xususiyatlari.",
-    "content": []
+    "videoUrl": "https://youtu.be/mRY6tWD2kPs?si=i8beoTHipJTa5eK2"
   },
   {
     "id": "bot-3",
@@ -21,7 +22,7 @@ export const botanyLessons = [
     "title": "3-§. O‘simliklarning hayotiy shakllari",
     "chapter": "I bob. O‘simliklar dunyosi bilan umumiy tanishuv",
     "preview": "O‘simliklarning turli xil hayotiy shakllari bilan tanishuv.",
-    "content": []
+    "videoUrl": "https://youtu.be/hZA-hSni4t4?si=sZq2BywjSPKY54Oc"
   },
   {
     "id": "bot-4",
@@ -29,7 +30,7 @@ export const botanyLessons = [
     "title": "4-§. O‘simlik hujayrasining tuzilishi",
     "chapter": "II bob. Hujayra – hayotning asosi",
     "preview": "O‘simlik hujayrasining tuzilishi va organoidlari.",
-    "content": []
+    "videoUrl": "https://youtu.be/LdNObOU0WCo?si=B_56bnIWvZQYkOaA"
   },
   {
     "id": "bot-5",
@@ -229,6 +230,7 @@ export const botanyLessons = [
     "title": "29-§. O‘simliklarning suv bug‘latishi",
     "chapter": "IV bob. Gulli o‘simliklarning hayotiy faoliyati",
     "preview": "Transpiratsiya jarayoni.",
+    "videoUrl": "https://youtu.be/87vgU8uaU0k?si=v6yCbq0-pbhgFqf4",
     "content": []
   },
   {

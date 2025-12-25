@@ -114,7 +114,7 @@ const videosData = {
     { id: 26, title: "26-§. Poyada oziq moddalarning harakatlanishi", url: "https://youtu.be/TRHkOMbOTCk?si=aV0cGa4WN9UtWr41" },
     { id: 27, title: "27-§. Barglarda organik moddalarning hosil bo‘lishi", url: "https://youtu.be/8XB5I4ZFB5U?si=ZFnBbX-ZgEu3dByM" },
     { id: 28, title: "28-§. O‘simliklarning nafas olishi, oziqlanishi. O‘simliklarda moddalar almashinuvi", url: "https://youtu.be/pyRooYrAXc8?si=fmLwWFu3b5Sg4yLQ" },
-    { id: 29, title: "29-§. O‘simliklarning suv bug‘latishi", url: "" },
+    { id: 29, title: "29-§. O‘simliklarning suv bug‘latishi", url: "https://youtu.be/87vgU8uaU0k?si=v6yCbq0-pbhgFqf4" },
     { id: 30, title: "30-§. Kuz faslida o‘simliklar hayotida ro‘y beradigan o‘zgarishlar", url: "" },
     { id: 31, title: "31-§. O‘simliklarning ko‘payishi", url: "" },
     { id: 32, title: "32-§. Gullarning changlanishi", url: "" },
