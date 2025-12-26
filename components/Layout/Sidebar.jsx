@@ -1,14 +1,14 @@
 
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { X, Home, Book, Sparkles, GraduationCap, Hexagon, Dna, FlaskConical, Atom } from 'lucide-react';
+import { X, Home, Book, GraduationCap, Hexagon, Dna, FlaskConical, Atom } from 'lucide-react';
 
 export const Sidebar = ({ isOpen, onClose }) => {
   const links = [
     { to: '/', label: 'Bosh sahifa', icon: Home },
     { to: '/lessons', label: 'Darslar', icon: GraduationCap },
     { to: '/library', label: 'Kutubxona', icon: Book },
-    { to: '/bio-ai', label: 'EduBio AI', icon: Sparkles },
+    // { to: '/bio-ai', label: 'EduBio AI', icon: Sparkles }, // Vaqtincha o'chirildi
   ];
 
   return (
@@ -96,7 +96,7 @@ export const Sidebar = ({ isOpen, onClose }) => {
           <div className="mt-auto p-6 border-t border-white/5">
             <div className="bg-white/5 rounded-xl p-4 border border-white/5 backdrop-blur-sm">
                <h4 className="text-teal-400 text-xs font-bold uppercase tracking-wider mb-1">Versiya 1.0</h4>
-               <p className="text-gray-500 text-[10px]">EduBio AI tomonidan quvvatlanadi</p>
+               <p className="text-gray-500 text-[10px]">EduBio Platformasi</p>
             </div>
           </div>
         </div>

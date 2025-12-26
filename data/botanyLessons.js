@@ -239,6 +239,7 @@ export const botanyLessons = [
     "title": "30-§. Kuz faslida o‘simliklar hayotida ro‘y beradigan o‘zgarishlar",
     "chapter": "IV bob. Gulli o‘simliklarning hayotiy faoliyati",
     "preview": "Kuzgi o‘zgarishlar va barg to‘kilishi.",
+    "videoUrl": "https://youtu.be/TiGeKRgWyes?si=nLyMgFEeg9eq2uhP",
     "content": []
   },
   {

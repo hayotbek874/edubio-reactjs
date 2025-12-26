@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, PlayCircle, BookOpen, Video, Box, PenTool, Play, ExternalLink } from 'lucide-react';
+import { ArrowLeft, PlayCircle, BookOpen, Video, Box, PenTool, Play, ExternalLink, X } from 'lucide-react';
 import { BotanikaIntro } from '../components/lessons/botanika/BotanikaIntro';
 import { FloweringPlants } from '../components/lessons/botanika/FloweringPlants';
 import { PlantLifeForms } from '../components/lessons/botanika/PlantLifeForms';
@@ -8,6 +8,15 @@ import { CellActivity } from '../components/lessons/botanika/CellActivity';
 import { PlantTissues } from '../components/lessons/botanika/PlantTissues';
 import { RootTypes } from '../components/lessons/botanika/RootTypes';
 import { RootInternalStructure } from '../components/lessons/botanika/RootInternalStructure';
+import { SeoHelmet } from '../components/SeoHelmet';
+
+// YouTube ID sini ajratib olish funksiyasi
+const getYouTubeId = (url) => {
+  if (!url) return null;
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[2].length === 11) ? match[2] : null;
+};
 
 // Asosiy Bo'limlar (Kategoriyalar)
 const categories = [
@@ -83,7 +92,6 @@ const lessonsData = {
 };
 
 // Video darslar ma'lumotlari
-// YouTube embed linklari shu yerga qo'yiladi. 
 const videosData = {
   botanika: [
     { id: 1, title: "1-§. Botanika – o‘simliklar haqidagi fan", url: "https://www.youtube.com/embed/KVLR1aSp4cY" },
@@ -115,70 +123,104 @@ const videosData = {
     { id: 27, title: "27-§. Barglarda organik moddalarning hosil bo‘lishi", url: "https://youtu.be/8XB5I4ZFB5U?si=ZFnBbX-ZgEu3dByM" },
     { id: 28, title: "28-§. O‘simliklarning nafas olishi, oziqlanishi. O‘simliklarda moddalar almashinuvi", url: "https://youtu.be/pyRooYrAXc8?si=fmLwWFu3b5Sg4yLQ" },
     { id: 29, title: "29-§. O‘simliklarning suv bug‘latishi", url: "https://youtu.be/87vgU8uaU0k?si=v6yCbq0-pbhgFqf4" },
-    { id: 30, title: "30-§. Kuz faslida o‘simliklar hayotida ro‘y beradigan o‘zgarishlar", url: "" },
-    { id: 31, title: "31-§. O‘simliklarning ko‘payishi", url: "" },
-    { id: 32, title: "32-§. Gullarning changlanishi", url: "" },
-    { id: 33, title: "33-§. Gulli o‘simliklarning jinsiy ko‘payishi. Urug‘lanish", url: "" },
+    { id: 30, title: "30-§. Kuz faslida o‘simliklar hayotida ro‘y beradigan o‘zgarishlar", url: "https://youtu.be/esE7pYl3_-s?si=dcuDJy4tKiYJY5XR" },
+    { id: 31, title: "31-§. O‘simliklarning ko‘payishi", url: "https://youtu.be/NrdUGyMiino?si=pIPuYE35LGAz-dU3" },
+    { id: 32, title: "32-§. Gullarning changlanishi", url: "https://youtu.be/J7N8y2HrBgY?si=VJCDeCNhlakJVRP4" },
+    { id: 33, title: "33-§. Gulli o‘simliklarning jinsiy ko‘payishi. Urug‘lanish", url: "https://youtu.be/AOJYhOApYU0?si=Hhyw3rK4CykNulmI" },
     { id: 34, title: "34-§. Meva va urug‘larning tarqalishi", url: "https://youtu.be/quoaxEbb0J0?si=jroLak-3QbSbE2JW" },
-    { id: 35, title: "35-§. Urug‘larning unib chiqishi", url: "" },
-    { id: 36, title: "36-§. O‘simlik – yaxlit organizm", url: "" },
-    { id: 37, title: "37-§. O‘simliklar dunyosiga ekologik omillarning ta’siri", url: "" },
-    { id: 38, title: "38-§. O‘simliklar sistematikasi haqida tushuncha", url: "" },
-    { id: 39, title: "39-§. Suv o‘tlari. Bir hujayrali yashil suv o‘tlari", url: "" },
-    { id: 40, title: "40-§. Ko‘p hujayrali yashil suv o‘tlari", url: "" },
-    { id: 41, title: "41-§. Qo‘ng‘ir va qizil suv o‘tlar bo‘limlari", url: "" },
-    { id: 42, title: "42-§. Yo‘sinlar bo‘limi", url: "" },
-    { id: 43, title: "43-§. Qirqbo‘g‘imlar bo‘limi", url: "" },
-    { id: 44, title: "44-§. Qirqquloqlar bo‘limi", url: "" },
-    { id: 45, title: "45-§. Ochiq urug‘li o‘simliklar bo‘limi. Archa", url: "" },
-    { id: 46, title: "46-§. Yopiq urug‘li o‘simliklar haqida ma’lumotlar", url: "" },
-    { id: 47, title: "47-§. Ra’nodoshlar oilasi", url: "" },
-    { id: 48, title: "48-§. Karamdoshlar oilasi", url: "" },
-    { id: 49, title: "49-§. Sho‘radoshlar oilasi", url: "" },
-    { id: 50, title: "50-§. Gulxayridoshlar oilasi", url: "" },
-    { id: 51, title: "51-§. Burchoqdoshlar (Dukkakdoshlar) oilasi", url: "" },
-    { id: 52, title: "52-§. Ituzumdoshlar oilasi", url: "" },
-    { id: 53, title: "53-§. Tokdoshlar oilasi", url: "" },
-    { id: 54, title: "54-§. Qovoqdoshlar oilasi", url: "" },
-    { id: 55, title: "55-§. Qoqi o‘tdoshlar (Murakkabguldoshlar) oilasi", url: "" },
-    { id: 56, title: "56-§. Loladoshlar oilasi", url: "" },
-    { id: 57, title: "57-§. Piyozdoshlar oilasi", url: "" },
-    { id: 58, title: "58-§. Bug‘doydoshlar (Boshoqdoshlar) oilasi", url: "" },
-    { id: 59, title: "59-§. Yerda o‘simliklar dunyosining rivojlanishi", url: "" }
+    { id: 35, title: "35-§. Urug‘larning unib chiqishi", url: "https://youtu.be/4MpewyvK94c?si=RG_Z9SDbGywUYr5F" },
+    { id: 36, title: "36-§. O‘simlik – yaxlit organizm", url: "https://youtu.be/KF78UDxmDU8?si=P0Yd-xrJ8M56g7X2" },
+    { id: 37, title: "37-§. O‘simliklar dunyosiga ekologik omillarning ta’siri", url: "https://youtu.be/fDHRtOf8ld8?si=tR4iFnipdEkCXdTA" },
+    { id: 38, title: "38-§. O‘simliklar sistematikasi haqida tushuncha", url: "https://youtu.be/KkqQJqkch_Y?si=v6lovbZbeufNRvhg" },
+    { id: 39, title: "39-§. Suv o‘tlari. Bir hujayrali yashil suv o‘tlari", url: "https://youtu.be/Vn7rBgs-PYA?si=Pbm32fLyoKXorOI1" },
+    { id: 40, title: "40-§. Ko‘p hujayrali yashil suv o‘tlari", url: "https://youtu.be/f1YoNGOJiLA?si=6ibv8sCyfXr0AQEj" },
+    { id: 41, title: "41-§. Qo‘ng‘ir va qizil suv o‘tlar bo‘limlari", url: "https://youtu.be/w-CthR3BVjU?si=KsBgaya3roLjCraZ" },
+    { id: 42, title: "42-§. Yo‘sinlar bo‘limi", url: "https://youtu.be/5sMUdNl1xIM?si=bnyG_4rGqPNi3Oqc" },
+    { id: 43, title: "43-§. Qirqbo‘g‘imlar bo‘limi", url: "https://youtu.be/KL3anPaeYGg?si=0z3qoctf1G-R7Psa" },
+    { id: 44, title: "44-§. Qirqquloqlar bo‘limi", url: "https://youtu.be/fgfzio3SWo8?si=HQYIJ2c8iAJr6tXx" },
+    { id: 45, title: "45-§. Ochiq urug‘li o‘simliklar bo‘limi. Archa", url: "https://youtu.be/DIc5mhrXgKQ?si=CjqS5SDYrlvoKFrj" },
+    { id: 46, title: "46-§. Yopiq urug‘li o‘simliklar haqida ma’lumotlar", url: "https://youtu.be/8BAv2becVeQ?si=D6ZXDdtrwS36KmLG" },
+    { id: 47, title: "47-§. Ra’nodoshlar oilasi", url: "https://youtu.be/pbOyuAkH7C8?si=1NBW3PkbWaHA2RCw" },
+    { id: 48, title: "48-§. Karamdoshlar oilasi", url: "https://youtu.be/6aSpMRBo92k?si=VidY6YLdIxSlFO7W" },
+    { id: 49, title: "49-§. Sho‘radoshlar oilasi", url: "https://youtu.be/uzu_g5aWKt4?si=4NC7fkPUT-Pe1uOv" },
+    { id: 50, title: "50-§. Gulxayridoshlar oilasi", url: "https://youtu.be/znoXnq7fHPc?si=ysQAM-Itp55s1gty" },
+    { id: 51, title: "51-§. Burchoqdoshlar (Dukkakdoshlar) oilasi", url: "https://youtu.be/aXtDVkC1hak?si=bNCj1S9WuBEYNrQL" },
+    { id: 52, title: "52-§. Ituzumdoshlar oilasi", url: "https://youtu.be/ZowmLUvrHCM?si=MhCIVv-lCsTMLZlJ" },
+    { id: 53, title: "53-§. Tokdoshlar oilasi", url: "https://youtu.be/8i4h37IADUI?si=nr1rnv3GaneOa2bR" },
+    { id: 54, title: "54-§. Qovoqdoshlar oilasi", url: "https://youtu.be/KHPFreRIfp4?si=xfwNxplWN7uwZmpM" },
+    { id: 55, title: "55-§. Qoqi o‘tdoshlar (Murakkabguldoshlar) oilasi", url: "https://youtu.be/XzR1eWm3hiw?si=Ux7ItACruPLQVXG3" },
+    { id: 56, title: "56-§. Loladoshlar oilasi", url: "https://youtu.be/EMRWag3ZUK0?si=A3lJuCe97NFIZU-P" },
+    { id: 57, title: "57-§. Piyozdoshlar oilasi", url: "https://youtu.be/ajewLpebbrU?si=0o-i36cdex44Yf4s" },
+    { id: 58, title: "58-§. Bug‘doydoshlar (Boshoqdoshlar) oilasi", url: "https://youtu.be/Of-J7Igi_bU?si=ogzQQdJMCj86DGAZ" },
+    { id: 59, title: "59-§. Yerda o‘simliklar dunyosining rivojlanishi", url: "https://youtu.be/jRqu61E63Ig?si=8LrPnHYX1aSP2FfA" }
   ],
   zoologiya: [],
   anatomiya: [],
 };
 
-// YouTube ID sini ajratib olish funksiyasi
-const getYouTubeId = (url) => {
-  if (!url) return null;
-  // Yangi regex qo'shildi: youtube.com/watch?v=, youtu.be/, va boshqa variantlar uchun
-  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-  const match = url.match(regExp);
-  return (match && match[2].length === 11) ? match[2] : null;
+const VideoModal = ({ videoUrl, onClose }) => {
+  if (!videoUrl) return null;
+
+  // YouTube embed URL formatiga o'tkazish
+  const videoId = getYouTubeId(videoUrl);
+  const embedUrl = videoId ? `https://www.youtube.com/embed/${videoId}?autoplay=1&modestbranding=1&rel=0` : videoUrl;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75 p-4 animate-fade-in">
+      <div className="relative w-full max-w-4xl h-auto bg-slate-900 rounded-lg overflow-hidden shadow-2xl">
+        <button
+          onClick={onClose}
+          className="absolute top-3 right-3 z-10 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+          aria-label="Modalni yopish"
+        >
+          <X size={24} />
+        </button>
+        <div className="relative pt-[56.25%]"> {/* 16:9 aspect ratio */}
+          <iframe
+            className="absolute inset-0 w-full h-full"
+            src={embedUrl}
+            title="YouTube video player"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerPolicy="strict-origin-when-cross-origin"
+            allowFullScreen
+          ></iframe>
+        </div>
+      </div>
+    </div>
+  );
 };
+
 
 export const LessonsPage = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedResourceType, setSelectedResourceType] = useState(null); // 'lessons', 'videos', '3d', 'quiz'
   const [selectedLesson, setSelectedLesson] = useState(null);
+  const [showVideoModal, setShowVideoModal] = useState(false); // YANGI: Video modalni boshqarish uchun state
+  const [selectedVideoUrl, setSelectedVideoUrl] = useState(''); // YANGI: Modalda ko'rsatiladigan video URL'i
 
   // Kategoriya (masalan, Botanika) tanlanganda
   const handleCategoryClick = (categoryId) => {
     setSelectedCategory(categoryId);
     setSelectedResourceType(null);
     setSelectedLesson(null);
+    setShowVideoModal(false); // Modalni yopish
+    setSelectedVideoUrl('');
   };
 
   // Resurs turi (masalan, Dars Mavzulari) tanlanganda
   const handleResourceTypeClick = (typeId) => {
     setSelectedResourceType(typeId);
     setSelectedLesson(null);
+    setShowVideoModal(false); // Modalni yopish
+    setSelectedVideoUrl('');
   };
 
   const handleBackClick = () => {
-    if (selectedLesson) {
+    if (showVideoModal) { // Agar video modal ochiq bo'lsa, uni yopamiz
+      setShowVideoModal(false);
+      setSelectedVideoUrl('');
+    } else if (selectedLesson) {
       setSelectedLesson(null);
     } else if (selectedResourceType) {
       setSelectedResourceType(null);
@@ -190,21 +232,16 @@ export const LessonsPage = () => {
   const handleLessonClick = (lesson) => {
     if (lesson.component) {
       setSelectedLesson(lesson);
-    } else {
+    }
+    else {
       alert("Bu dars uchun ma'lumot hali tayyorlanmoqda.");
     }
   };
 
   const handleVideoClick = (video) => {
-    const videoId = getYouTubeId(video.url);
-    if (videoId) {
-        // YouTube ilovasida yoki brauzerda ochish uchun to'liq havola
-        const watchUrl = `https://www.youtube.com/watch?v=${videoId}`;
-        // Yangi oynada (ilova tashqarisida) ochish
-        window.open(watchUrl, '_blank');
-    } else {
-        alert("Video havolasi noto'g'ri");
-    }
+    // Videoni to'g'ridan-to'g'ri YouTube saytida yangi tabda ochish O'rniga modalda ochamiz
+    setSelectedVideoUrl(video.url);
+    setShowVideoModal(true);
   };
 
   const currentCategory = categories.find(c => c.id === selectedCategory);
@@ -213,6 +250,11 @@ export const LessonsPage = () => {
 
   return (
     <div className="w-full h-full min-h-screen bg-slate-900 overflow-y-auto no-scrollbar pb-20">
+      <SeoHelmet 
+        title={selectedLesson ? selectedLesson.title : selectedCategory ? `${currentCategory?.title} | Darslar` : "Darslar Bo'limi"}
+        description="Biologiya fanining barcha bo'limlari: Botanika, Zoologiya, Anatomiya va boshqalar. Video darslar va matnli ma'lumotlar."
+        keywords={`biologiya darslari, ${selectedCategory || 'botanika, zoologiya, anatomiya'}, video darslar, maktab darsliklari`}
+      />
       
       {/* Background decoration */}
       <div className="fixed inset-0 z-0 pointer-events-none">
@@ -256,9 +298,9 @@ export const LessonsPage = () => {
                   </div>
 
                   {/* Title */}
-                  <h3 className="text-lg md:text-xl font-bold text-white tracking-wider uppercase z-10 text-center px-4 leading-tight drop-shadow-xl group-hover:scale-105 transition-transform duration-300">
+                  <h2 className="text-lg md:text-xl font-bold text-white tracking-wider uppercase z-10 text-center px-4 leading-tight drop-shadow-xl group-hover:scale-105 transition-transform duration-300">
                     {cat.title}
-                  </h3>
+                  </h2>
                   
                   {/* Decorative line */}
                   <div 
@@ -277,6 +319,7 @@ export const LessonsPage = () => {
               <button 
                 onClick={handleBackClick}
                 className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+                aria-label="Orqaga qaytish"
               >
                 <ArrowLeft size={24} />
               </button>
@@ -365,7 +408,7 @@ export const LessonsPage = () => {
                  {selectedResourceType === 'videos' && (
                     /* VIDEOS LIST */
                     currentVideos.length > 0 ? (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                          {currentVideos.map((video, index) => {
                             const videoId = getYouTubeId(video.url);
                             const thumbnailUrl = videoId ? `https://img.youtube.com/vi/${videoId}/mqdefault.jpg` : null;
@@ -377,31 +420,32 @@ export const LessonsPage = () => {
                                 className="group bg-white/5 border border-white/10 rounded-xl overflow-hidden cursor-pointer hover:bg-white/10 transition-all hover:-translate-y-1"
                               >
                                  {/* Thumbnail Placeholder (or dynamic if available) */}
-                                 <div className="h-48 relative flex items-center justify-center bg-black">
+                                 <div className="h-44 relative flex items-center justify-center bg-black">
                                     {thumbnailUrl ? (
                                       <img 
                                         src={thumbnailUrl} 
                                         alt={video.title} 
                                         className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                                        loading="lazy"
                                       />
                                     ) : (
                                       <div className="w-full h-full bg-black/40" /> 
                                     )}
                                     
                                     <div className="absolute inset-0 flex items-center justify-center">
-                                        <div className="w-14 h-14 rounded-full bg-red-600 flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform">
-                                           <ExternalLink size={24} fill="white" className="text-white" />
+                                        <div className="w-12 h-12 rounded-full bg-red-600/90 flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform">
+                                           <PlayCircle size={20} fill="white" className="ml-1 text-white" /> {/* Changed ExternalLink to PlayCircle */}
                                         </div>
                                     </div>
-                                    <div className="absolute top-2 right-2 bg-black/60 px-2 py-1 rounded text-xs text-white flex items-center gap-1">
-                                        <Play size={10} /> YouTube
-                                    </div>
+                                    
                                  </div>
                                  <div className="p-4">
-                                    <h4 className="text-white font-bold text-lg mb-1 group-hover:text-red-400 transition-colors line-clamp-2">
+                                    <h4 className="text-white font-bold text-sm md:text-base mb-1 group-hover:text-teal-400 transition-colors line-clamp-2">
                                       {video.title}
                                     </h4>
-                                    <p className="text-gray-500 text-sm">EduBio • YouTube-da ochish</p>
+                                    <p className="text-gray-500 text-xs mt-2 flex items-center gap-1">
+                                        <PlayCircle size={12} /> YouTube
+                                    </p>
                                  </div>
                               </div>
                             );
@@ -437,6 +481,11 @@ export const LessonsPage = () => {
           </div>
         )}
       </div>
+
+      {/* Video Modal */}
+      {showVideoModal && (
+        <VideoModal videoUrl={selectedVideoUrl} onClose={() => setShowVideoModal(false)} />
+      )}
     </div>
   );
 };

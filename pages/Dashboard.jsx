@@ -1,16 +1,23 @@
 import React from 'react';
+import { SeoHelmet } from '../components/SeoHelmet';
 
 export const Dashboard = () => {
   return (
     // Scrollable container for the Dashboard content
     <div className="relative w-full h-full overflow-hidden bg-slate-900">
+      <SeoHelmet 
+        title="Asosiy Sahifa" 
+        description="EduBio - Sun'iy intellekt yordamida biologiya o'rganish platformasi. Darslar, testlar va interaktiv materiallar."
+        keywords="biologiya, sun'iy intellekt, o'quv platformasi, darslar, edubio, asosiy"
+      />
       
       {/* Background Image - Fixed position */}
       <div className="absolute inset-0 z-0 pointer-events-none">
           <img 
             src="https://images.unsplash.com/photo-1555169062-013468b47731?q=80&w=2574&auto=format&fit=crop" 
-            alt="Background" 
+            alt="Biologiya laboratoriyasi foni" 
             className="w-full h-full object-cover object-[40%_28%] animate-fade-in opacity-95"
+            loading="lazy"
           />
           {/* Gradients for better text readability */}
           <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent/20"></div>

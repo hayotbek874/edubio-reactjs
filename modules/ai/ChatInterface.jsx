@@ -1,7 +1,9 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Image as ImageIcon, Volume2, Loader2, Sparkles, Mic, X, MicOff, Paperclip, FileText, FileSpreadsheet, File as FileIcon, Globe } from 'lucide-react';
-import { generateBioResponse, generateBioImage, generateSpeech } from '../../services/geminiService';
+import { Send, Image as ImageIcon, Volume2, Loader2, Sparkles, Mic, X, MicOff, Paperclip, FileText, FileSpreadsheet, File as FileIcon, Zap, Bot } from 'lucide-react';
+
+// Ikkala servisni ham import qilamiz va nomlarini o'zgartiramiz
+import * as GeminiService from '../../services/geminiService';
 
 // --- Voice Mode Component ---
 const VoiceOverlay = ({ onClose, onSend, isProcessing, isPlayingAudio, language }) => {
@@ -201,7 +203,7 @@ export const ChatInterface = () => {
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [isVoiceMode, setIsVoiceMode] = useState(false);
   const [language, setLanguage] = useState('uz'); // Default language 'uz'
-  
+
   // File Upload State
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
@@ -268,14 +270,17 @@ export const ChatInterface = () => {
       const lowerInput = userMsg.content.toLowerCase();
       let responseText = '';
       let generatedImageUrl = undefined;
-
-      // PASS LANGUAGE to generateBioResponse
+      
+      // --- LOGIC TO CHOOSE SERVICE ---
+      
+      // 1. Agar fayl (rasm) yuklangan bo'lsa -> Har doim GEMINI
       if (fileToSend) {
         const filePart = await fileToGenerativePart(fileToSend);
-        responseText = await generateBioResponse(userMsg.content, filePart, messages, language);
+        responseText = await GeminiService.generateBioResponse(userMsg.content, filePart, messages, language);
       } 
+      // 2. Rasm chizish so'ralganda -> Har doim GEMINI
       else if (lowerInput.includes('rasm chiz') || lowerInput.includes('create image') || lowerInput.includes('ko\'rsat') || lowerInput.includes('нарисуй') || lowerInput.includes('покажи')) {
-        const imgUrl = await generateBioImage(userMsg.content);
+        const imgUrl = await GeminiService.generateBioImage(userMsg.content);
         if (imgUrl) {
           generatedImageUrl = imgUrl;
           const imgTexts = {
@@ -285,11 +290,13 @@ export const ChatInterface = () => {
           };
           responseText = imgTexts[language] || imgTexts.uz;
         } else {
-          responseText = await generateBioResponse(userMsg.content, null, messages, language);
+          // Agar rasm chizib bo'lmasa, matn qaytaradi
+          responseText = await GeminiService.generateBioResponse(userMsg.content, null, messages, language);
         }
       } 
+      // 3. Oddiy matn -> Har doim GEMINI
       else {
-        responseText = await generateBioResponse(userMsg.content, null, messages, language);
+           responseText = await GeminiService.generateBioResponse(userMsg.content, null, messages, language);
       }
 
       const aiMsg = {
@@ -310,15 +317,13 @@ export const ChatInterface = () => {
 
     } catch (e) {
       console.error(e);
-      const errorTexts = {
-          uz: "Kechirasiz, xatolik yuz berdi. Iltimos qayta urinib ko'ring.",
-          ru: "Извините, произошла ошибка. Пожалуйста, попробуйте еще раз.",
-          en: "Sorry, an error occurred. Please try again."
-      };
+      // Xatolik xabarini aniqroq ko'rsatish
+      const errorMessage = e.message || e.toString();
+      
       const errorMsg = {
           id: Date.now().toString(),
           role: 'model',
-          content: errorTexts[language] || errorTexts.uz,
+          content: `⚠️ XATOLIK: ${errorMessage}\n\n(Iltimos, konsolni ham tekshiring)`,
           timestamp: new Date(),
           type: 'text'
       };
@@ -333,7 +338,8 @@ export const ChatInterface = () => {
     setIsPlayingAudio(true);
     
     try {
-      const rawAudioBuffer = await generateSpeech(text);
+      // Ovoz uchun har doim Gemini ishlatamiz
+      const rawAudioBuffer = await GeminiService.generateSpeech(text);
       if (rawAudioBuffer) {
         if (!audioContextRef.current) {
           audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
@@ -470,26 +476,28 @@ export const ChatInterface = () => {
                     <h2 className="text-2xl font-bold text-white mb-2">{currentWelcome.title}</h2>
                     <p className="max-w-md mb-6">{currentWelcome.subtitle}</p>
                     
-                    {/* Language Selector in Welcome Screen */}
-                    <div className="bg-black/40 backdrop-blur-md p-2 rounded-xl border border-white/10 inline-flex gap-2">
-                         <button 
-                            onClick={() => setLanguage('uz')}
-                            className={`px-4 py-2 rounded-lg transition-all ${language === 'uz' ? 'bg-emerald-600 text-white' : 'hover:bg-white/10 text-white/70'}`}
-                         >
-                            🇺🇿 O'zbek
-                         </button>
-                         <button 
-                            onClick={() => setLanguage('ru')}
-                            className={`px-4 py-2 rounded-lg transition-all ${language === 'ru' ? 'bg-emerald-600 text-white' : 'hover:bg-white/10 text-white/70'}`}
-                         >
-                            🇷🇺 Русский
-                         </button>
-                         <button 
-                            onClick={() => setLanguage('en')}
-                            className={`px-4 py-2 rounded-lg transition-all ${language === 'en' ? 'bg-emerald-600 text-white' : 'hover:bg-white/10 text-white/70'}`}
-                         >
-                            🇺🇸 English
-                         </button>
+                    {/* Language Selector */}
+                    <div className="flex flex-col gap-3 items-center">
+                        <div className="bg-black/40 backdrop-blur-md p-1.5 rounded-xl border border-white/10 inline-flex gap-1">
+                             <button 
+                                onClick={() => setLanguage('uz')}
+                                className={`px-3 py-1.5 rounded-lg text-sm transition-all ${language === 'uz' ? 'bg-emerald-600 text-white' : 'hover:bg-white/10 text-white/70'}`}
+                             >
+                                🇺🇿 UZ
+                             </button>
+                             <button 
+                                onClick={() => setLanguage('ru')}
+                                className={`px-3 py-1.5 rounded-lg text-sm transition-all ${language === 'ru' ? 'bg-emerald-600 text-white' : 'hover:bg-white/10 text-white/70'}`}
+                             >
+                                🇷🇺 RU
+                             </button>
+                             <button 
+                                onClick={() => setLanguage('en')}
+                                className={`px-3 py-1.5 rounded-lg text-sm transition-all ${language === 'en' ? 'bg-emerald-600 text-white' : 'hover:bg-white/10 text-white/70'}`}
+                             >
+                                🇺🇸 EN
+                             </button>
+                        </div>
                     </div>
                 </div>
             )}
@@ -621,6 +629,7 @@ export const ChatInterface = () => {
                 </button>
                 </div>
             </div>
+            
             </div>
         </div>
       </div>
