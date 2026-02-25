@@ -250,8 +250,8 @@ export const LessonsPage = () => {
                         e.target.style.display = 'none'; 
                       }}
                     />
-                    {/* Dark Overlay */}
-                    <div className="absolute inset-0 bg-slate-900/50 group-hover:bg-slate-900/40 transition-colors duration-300"></div>
+                    {/* Dark Overlay - Reduced opacity for better image visibility */}
+                    <div className="absolute inset-0 bg-slate-900/15 group-hover:bg-slate-900/10 transition-colors duration-300"></div>
                   </div>
 
                   {/* Title */}
