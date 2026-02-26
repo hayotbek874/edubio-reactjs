@@ -294,12 +294,13 @@ export const LessonsPage = () => {
                     <div 
                       key={type.id}
                       onClick={() => handleResourceTypeClick(type.id)}
-                      className="bg-white/5 border border-white/10 rounded-2xl p-6 flex items-center gap-6 cursor-pointer hover:bg-white/10 transition-all hover:translate-x-2 group"
+                      className="relative overflow-hidden bg-white/5 border border-white/10 rounded-2xl p-6 flex items-center gap-6 cursor-pointer hover:bg-white/10 transition-all hover:translate-x-2 group"
                     >
-                       <div className={`w-16 h-16 rounded-full flex items-center justify-center text-white shadow-lg ${type.color} group-hover:scale-110 transition-transform`}>
+                       <div className="absolute inset-0 bg-black/45"></div>
+                       <div className={`relative z-10 w-16 h-16 rounded-full flex items-center justify-center text-white shadow-lg ${type.color} group-hover:scale-110 transition-transform`}>
                           {type.icon}
                        </div>
-                       <div>
+                       <div className="relative z-10">
                           <h3 className="text-xl font-bold text-white mb-1 group-hover:text-teal-400 transition-colors">{type.title}</h3>
                           <p className="text-gray-400 text-sm">
                             {type.id === 'lessons' ? "Nazariy ma'lumotlar va matnli darslar" : 
@@ -329,9 +330,10 @@ export const LessonsPage = () => {
                             <div 
                               key={lesson.id} 
                               onClick={() => handleLessonClick(lesson)}
-                              className="bg-white/5 border border-white/10 rounded-xl p-4 flex items-center justify-between hover:bg-white/10 transition-colors cursor-pointer group"
+                              className="relative overflow-hidden bg-white/5 border border-white/10 rounded-xl p-4 flex items-center justify-between hover:bg-white/10 transition-colors cursor-pointer group"
                             >
-                              <div className="flex items-center gap-4">
+                              <div className="absolute inset-0 bg-black/45"></div>
+                              <div className="relative z-10 flex items-center gap-4">
                                 <div 
                                   className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center font-bold text-white"
                                   style={{ color: currentCategory?.color }}
@@ -347,7 +349,7 @@ export const LessonsPage = () => {
                                   </p>
                                 </div>
                               </div>
-                              <div className="flex items-center gap-3">
+                              <div className="relative z-10 flex items-center gap-3">
                                 <span className="text-gray-500 text-sm hidden md:inline">{lesson.duration}</span>
                                 <PlayCircle className="text-gray-400 group-hover:text-teal-400 transition-colors" size={24} />
                               </div>
