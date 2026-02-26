@@ -8,25 +8,22 @@ export const Dashboard = () => {
       {/* Background Image - Fixed position */}
       <div className="absolute inset-0 z-0 pointer-events-none">
           <img 
-            src="https://images.unsplash.com/photo-1555169062-013468b47731?q=80&w=2574&auto=format&fit=crop" 
+            src="/images/asosiysahifa.png" 
             alt="Background" 
-            className="w-full h-full object-cover object-[40%_28%] animate-fade-in opacity-95"
+            className="w-full h-full object-cover object-[40%_28%] animate-fade-in opacity-100"
           />
-          {/* Gradients for better text readability */}
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent/20"></div>
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-900/80 via-slate-900/30 to-transparent"></div>
       </div>
 
       {/* Main Content */}
       <div className="relative z-10 flex flex-col justify-end h-full pb-24 px-6 md:px-12 max-w-7xl mx-auto w-full">
         
         {/* Header / Hero Section - Bottom aligned on Desktop */}
-        <div className="w-full md:w-3/4 lg:w-1/2 bg-slate-900/60 backdrop-blur-md border border-white/10 rounded-3xl p-6 md:p-10 text-left shadow-2xl animate-fade-in transition-all ring-1 ring-white/5 mb-8">
-          <h1 className="text-3xl md:text-5xl font-extrabold mb-4 drop-shadow-lg tracking-tight leading-tight">
+        <div className="w-full md:w-2/3 lg:w-[42%] bg-slate-900/60 backdrop-blur-md border border-white/10 rounded-3xl p-5 md:p-7 text-left shadow-2xl animate-fade-in transition-all ring-1 ring-white/5 mb-6">
+          <h1 className="text-2xl md:text-4xl font-extrabold mb-3 drop-shadow-lg tracking-tight leading-tight">
             <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-cyan-400 bg-clip-text text-transparent animate-gradient-x bg-[length:200%_auto]">EduBio</span>{' '}
             <span className="bg-gradient-to-r from-pink-400 via-rose-500 to-purple-500 bg-clip-text text-transparent animate-gradient-x bg-[length:200%_auto]">Platformasi v1.0</span>
           </h1>
-          <p className="text-gray-100 text-base md:text-lg font-medium leading-relaxed opacity-95 drop-shadow-md mb-6">
+          <p className="text-gray-100 text-sm md:text-base font-medium leading-relaxed opacity-95 drop-shadow-md mb-4">
             Salom O'quvchilar! Platformaga xush kelibsiz.<br/>
             Biologiya fanini zamonaviy usulda, sun'iy intellekt yordamida o'rganing.
           </p>

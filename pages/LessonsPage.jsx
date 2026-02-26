@@ -16,42 +16,44 @@ const categories = [
     id: "botanika", 
     color: "#10b981",
     gradient: "bg-gradient-to-br from-green-600 to-emerald-900",
-    image: "https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?w=800&q=80"
+    image: "/images/batanikabo'limi.png",
+    imageClass: "object-cover object-center"
   },
   { 
     title: "ZOOLOGIYA", 
     id: "zoologiya", 
     color: "#3b82f6",
     gradient: "bg-gradient-to-br from-blue-600 to-indigo-900",
-    image: "https://images.unsplash.com/photo-1564349683136-77e08dba1ef7?w=800&q=80"
+    image: "/images/zoologiyabo'limi.png",
+    imageClass: "object-cover object-center"
   },
   { 
     title: "ODAM ANATOMIYASI", 
     id: "anatomiya", 
     color: "#ef4444",
     gradient: "bg-gradient-to-br from-red-600 to-rose-900",
-    image: "https://images.unsplash.com/photo-1559757175-5700dde675bc?w=800&q=80"
+    image: "/images/anatomiyabolimi.png"
   },
   { 
     title: "BIOLOGIYA VA SITOLOGIYA", 
     id: "sitologiya", 
     color: "#8b5cf6",
     gradient: "bg-gradient-to-br from-purple-600 to-violet-900",
-    image: "https://images.unsplash.com/photo-1579165466741-7f35a4755657?w=800&q=80"
+    image: "/images/biologiyavasitologiya.png"
   },
   { 
     title: "UMUMIY BIOLOGIYA", 
     id: "umumiy", 
     color: "#f59e0b",
     gradient: "bg-gradient-to-br from-amber-500 to-orange-900",
-    image: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=800&q=80"
+    image: "/images/umumiybiologiya.png"
   },
   { 
     title: "BIOLOGIYA VA EKOLOGIYA", 
     id: "ekologiya", 
     color: "#14b8a6",
     gradient: "bg-gradient-to-br from-teal-600 to-cyan-900",
-    image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80"
+    image: "/images/biologiyavaekologiya.png"
   },
 ];
 
@@ -215,6 +217,11 @@ export const LessonsPage = () => {
       
       {/* Background decoration */}
       <div className="fixed inset-0 z-0 pointer-events-none">
+          <img
+            src="/images/darslarbo'limiuchun.png"
+            alt="Lessons background"
+            className="w-full h-full object-cover"
+          />
           <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
           <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
       </div>
@@ -225,12 +232,14 @@ export const LessonsPage = () => {
         {!selectedCategory ? (
           <>
             <div className="mb-10 text-center flex flex-col items-center border-b border-white/10 pb-6">
-              <h1 className="text-3xl md:text-4xl font-bold text-teal-400 mb-2 tracking-tight">
-                O'quv Bo'limlari
-              </h1>
-              <p className="text-gray-400 text-sm md:text-base max-w-2xl text-center">
-                Biologiya fanining asosiy yo'nalishlari bo'yicha darslarni tanlang va o'rganishni boshlang.
-              </p>
+              <div className="bg-black/55 backdrop-blur-sm rounded-2xl px-6 py-4">
+                <h1 className="text-3xl md:text-4xl font-bold text-teal-400 mb-2 tracking-tight">
+                  O'quv Bo'limlari
+                </h1>
+                <p className="text-gray-200 text-sm md:text-base max-w-2xl text-center">
+                  Biologiya fanining asosiy yo'nalishlari bo'yicha darslarni tanlang va o'rganishni boshlang.
+                </p>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -245,20 +254,13 @@ export const LessonsPage = () => {
                     <img 
                       src={cat.image} 
                       alt={cat.title} 
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-70"
+                      className={`w-full h-full transition-transform duration-700 group-hover:scale-110 opacity-100 ${cat.imageClass || 'object-cover object-center'}`}
                       onError={(e) => {
                         e.target.style.display = 'none'; 
                       }}
                     />
-                    {/* Dark Overlay - Reduced opacity for better image visibility */}
-                    <div className="absolute inset-0 bg-slate-900/15 group-hover:bg-slate-900/10 transition-colors duration-300"></div>
                   </div>
 
-                  {/* Title */}
-                  <h3 className="text-lg md:text-xl font-bold text-white tracking-wider uppercase z-10 text-center px-4 leading-tight drop-shadow-xl group-hover:scale-105 transition-transform duration-300">
-                    {cat.title}
-                  </h3>
-                  
                   {/* Decorative line */}
                   <div 
                     className="absolute bottom-0 left-0 h-1 w-0 group-hover:w-full transition-all duration-500 ease-out z-10"

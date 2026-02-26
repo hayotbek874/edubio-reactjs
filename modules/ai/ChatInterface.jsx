@@ -185,6 +185,12 @@ export const ChatInterface = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [isVoiceMode, setIsVoiceMode] = useState(false);
+  const samplePrompts = [
+    "Fotosintez jarayoni bosqichlarini tushuntirib bera olasizmi?",
+    "Hayvonlarda qon aylanishi qanday ishlaydi?",
+    "O'simlik hujayrasi bilan hayvon hujayrasi farqi nimada?",
+    "DNK va RNK ning asosiy vazifalari nimalardan iborat?"
+  ];
   
   // File Upload State
   const [selectedFile, setSelectedFile] = useState(null);
@@ -310,6 +316,11 @@ export const ChatInterface = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleSamplePrompt = (prompt) => {
+    if (isLoading) return;
+    handleSend(prompt);
   };
 
   const playTTS = async (text) => {
@@ -445,6 +456,20 @@ export const ChatInterface = () => {
       <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 relative z-10 no-scrollbar">
         {/* Empty State Removed: Only Background Visible */}
         
+        {messages.length === 0 && !isLoading && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-10 md:mt-14 mb-8">
+            {samplePrompts.map((prompt) => (
+              <button
+                key={prompt}
+                onClick={() => handleSamplePrompt(prompt)}
+                className="text-left bg-black/55 border border-white/20 hover:border-emerald-400/50 hover:bg-black/65 backdrop-blur-sm transition-all rounded-2xl p-4 text-sm md:text-base font-medium text-white/90"
+              >
+                {prompt}
+              </button>
+            ))}
+          </div>
+        )}
+
         {messages.map((msg) => (
           <div key={msg.id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div className={`max-w-[85%] md:max-w-[70%] rounded-2xl p-4 backdrop-blur-md shadow-lg transition-all ${

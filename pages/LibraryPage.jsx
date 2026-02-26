@@ -164,13 +164,15 @@ export const LibraryPage = () => {
         
         {/* Header Section */}
         <div className="max-w-[1400px] mx-auto mb-8 flex flex-col items-center text-center">
-          <h1 className="text-3xl md:text-5xl font-bold text-white mb-2 flex items-center justify-center gap-3 drop-shadow-md">
-            <Book className="w-8 h-8 md:w-10 md:h-10 text-teal-400" />
-            Kutubxona
-          </h1>
-          <p className="text-gray-200 text-sm md:text-lg font-medium drop-shadow-sm max-w-2xl">
-            Maktab darsliklari, qo'llanmalar va testlar to'plami.
-          </p>
+          <div className="bg-black/45 backdrop-blur-sm border border-white/10 rounded-2xl px-5 py-4 md:px-8 md:py-5">
+            <h1 className="text-3xl md:text-5xl font-bold text-white mb-2 flex items-center justify-center gap-3 drop-shadow-md">
+              <Book className="w-8 h-8 md:w-10 md:h-10 text-teal-400" />
+              Kutubxona
+            </h1>
+            <p className="text-gray-200 text-sm md:text-lg font-medium drop-shadow-sm max-w-2xl">
+              Maktab darsliklari, qo'llanmalar va testlar to'plami.
+            </p>
+          </div>
         </div>
 
         {/* Controls: Search & Filter */}
